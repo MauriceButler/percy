@@ -1,5 +1,5 @@
 var test = require('grape'),
-    Cborm = require('../');
+    Percy = require('../');
 
 function mockConnector(callback){
     callback(null, {
@@ -12,38 +12,23 @@ function mockConnector(callback){
     });
 };
 
+mockValidator = {
+    validate: function(callback){
+        callback(null, true);
+    }
+};
+
 test('create Model', function(t){
 
     t.plan(2);
 
-    var cborm = new Cborm(mockConnector, {});
+    var percy = new Percy(mockConnector, mockValidator);
 
-    cborm.get('abc', function(error, model){
+    percy.get('abc', function(error, model){
         t.pass('Got from db');
     });
 
-    cborm.set('abc', {}, function(error, model){
+    percy.set('abc', {}, function(error, model){
         t.pass('set to db');
-    });
-});
-
-test('validation works', function(t){
-
-    t.plan(2);
-
-    var cborm = new Cborm(mockConnector, {type:'number'});
-
-    cborm.set('abc', 123, function(error, model){
-        if(error){
-            t.fail('Should have validated');
-        }else{
-            t.pass();
-        }
-    });
-
-    cborm.set('abc', {}, function(error, model){
-        if(error){
-            t.pass(error);
-        }
     });
 });

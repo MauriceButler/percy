@@ -1,15 +1,14 @@
 {
-  "name": "cborm",
+  "name": "percy",
   "version": "0.0.0",
-  "main": "model.js",
+  "main": "percy.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "kgo": "0.1.x",
-    "jsonschema": "~0.4.0"
+    "kgo": "0.1.x"
   },
   "devDependencies": {
     "grape": "~0.1.8"
@@ -19,6 +18,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:pni-yoik/cborm.git"
+    "url": "git@bitbucket.org:pni-yoik/percy.git"
   }
 }

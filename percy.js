@@ -1,15 +1,4 @@
-var kgo = require('kgo'),
-    validate = require('jsonschema').validate;
-
-function validateModel(model, callback) {
-    var validation = this.validator(model);
-
-    if(validation.errors && validation.errors.length){
-        return callback(validation.errors);
-    }
-
-    callback(null, model);
-};
+var kgo = require('kgo');
 
 function get(key, callback) {
     this.connector(function(error, bucket){
@@ -36,14 +25,11 @@ function set(key, data, callback) {
     });
 };
 
-function Model(connector, schema){
+function Model(connector, validator){
     this.connector = connector;
-    this.validator = function(data){
-        return validate(data, schema);
-    }
+    this.validator = validator
 };
 Model.prototype.get = get;
 Model.prototype.set = set;
-Model.prototype.validate = validateModel;
 
 module.exports = Model;
