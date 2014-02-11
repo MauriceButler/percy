@@ -1,7 +1,6 @@
 {
   "name": "cborm",
   "version": "0.0.0",
-  "description": "",
   "main": "model.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,5 +13,12 @@
   },
   "devDependencies": {
     "grape": "~0.1.8"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:pni-yoik/cborm.git"
   }
 }
