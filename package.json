@@ -1,0 +1,18 @@
+{
+  "name": "cborm",
+  "version": "0.0.0",
+  "description": "",
+  "main": "model.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "kgo": "0.1.x",
+    "jsonschema": "~0.4.0"
+  },
+  "devDependencies": {
+    "grape": "~0.1.8"
+  }
+}
