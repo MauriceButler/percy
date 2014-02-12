@@ -10,10 +10,10 @@ function mockConnector(callback){
             callback(null, model);
         },
     });
-};
+}
 
 mockValidator = {
-    validate: function(callback){
+    validate: function(data, callback){
         callback(null, true);
     }
 };

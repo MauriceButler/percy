@@ -7,7 +7,7 @@ function get(key, callback) {
         }
         bucket.get(key, callback);
     });
-};
+}
 
 function set(key, data, callback) {
     var model = this;
@@ -15,7 +15,7 @@ function set(key, data, callback) {
     kgo
     ('bucket', this.connector)
     ('model', function(done){
-        model.validate(data, done);
+        model.validator.validate(data, done);
     })
     (['bucket', 'model'], function(bucket, model){
         bucket.set(key, model, callback);
@@ -23,12 +23,12 @@ function set(key, data, callback) {
         bucket: callback,
         model: callback
     });
-};
+}
 
 function Model(connector, validator){
     this.connector = connector;
-    this.validator = validator
-};
+    this.validator = validator;
+}
 Model.prototype.get = get;
 Model.prototype.set = set;
 
