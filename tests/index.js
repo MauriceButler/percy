@@ -12,14 +12,14 @@ function createMockConnector(){
                 callback(null, db[key]);
             },
             set: function(key, model, callback){
-                db[key] = model;
+                db[key] = {value: model};
                 callback(null, model);
             },
             add: function(key, model, callback){
                 if(key in db){
                     return callback(true);
                 }
-                db[key] = model;
+                db[key] = {value: model};
                 callback(null, model);
             },
             remove: function(key, callback){
@@ -33,7 +33,7 @@ function createMockConnector(){
                 if(!(key in db)){
                     return callback(true);
                 }
-                db[key] = model;
+                db[key] = {value: model};
                 callback(null, model);
             }
         });
