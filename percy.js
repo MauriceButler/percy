@@ -27,7 +27,7 @@ function set(key, data, callback) {
             if(error){
                 return callback(error);
             }
-            callback(null, result.value);
+            callback(null, model);
         });
     }).errors({
         bucket: callback,
@@ -48,7 +48,7 @@ function add(key, data, callback){
             if(error){
                 return callback(error);
             }
-            callback(null, result.value);
+            callback(null, model);
         });
     }).errors({
         bucket: callback,
@@ -69,7 +69,7 @@ function replace(key, data, callback){
             if(error){
                 return callback(error);
             }
-            callback(null, result.value);
+            callback(null, model);
         });
     }).errors({
         bucket: callback,
@@ -82,7 +82,12 @@ function remove(key, callback){
         if(error){
             return callback(error);
         }
-        bucket.remove(key, callback);
+        bucket.remove(key, function(error, result){
+            if(error){
+                return callback(error);
+            }
+            callback(null);
+        });
     });
 }
 
