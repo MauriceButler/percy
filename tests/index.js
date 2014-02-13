@@ -9,10 +9,10 @@ function createMockConnector(){
                 if(!(key in db)){
                     return callback(true);
                 }
-                callback(null, {cas:{0:0,1:1}, value: db[key]});
+                callback(null, db[key]);
             },
             set: function(key, model, callback){
-                db[key] = {value: model};
+                db[key] = {cas:{0:0,1:1}, value: model};
                 callback(null, {cas:{0:0,1:1}});
             },
             add: function(key, model, callback){
@@ -43,7 +43,7 @@ function createMockConnector(){
 function createMockValidator(){
     return {
         validate: function(data, callback){
-            callback(null, true);
+            callback(null, data);
         }
     };
 }
@@ -157,6 +157,58 @@ test('cannot remove nonexistant', function(t){
     var percy = new Percy(createMockConnector(), createMockValidator());
 
     percy.remove('abc', function(error, model){
+        t.ok(error, 'error thrown as expected');
+    });
+});
+
+test('replace model', function(t){
+
+    t.plan(2);
+
+    var percy = new Percy(createMockConnector(), createMockValidator());
+
+    percy.add('abc', {a:1}, function(error, model){
+        t.pass('model added');
+
+        percy.replace('abc', {b:2}, function(error, model){
+            t.deepEqual(model, {b:2}, 'replace succeded');
+        });
+    });
+});
+
+test('cannot replace nonexistant', function(t){
+
+    t.plan(1);
+
+    var percy = new Percy(createMockConnector(), createMockValidator());
+
+    percy.replace('abc', {b:2}, function(error, model){
+        t.ok(error, 'error thrown as expected');
+    });
+});
+
+test('update model', function(t){
+
+    t.plan(2);
+
+    var percy = new Percy(createMockConnector(), createMockValidator());
+
+    percy.add('abc', {a:1}, function(error, model){
+        t.pass('model added');
+
+        percy.update('abc', {b:2}, function(error, model){
+            t.deepEqual(model, {a:1, b:2}, 'update succeded');
+        });
+    });
+});
+
+test('cannot update nonexistant', function(t){
+
+    t.plan(1);
+
+    var percy = new Percy(createMockConnector(), createMockValidator());
+
+    percy.update('abc', {b:2}, function(error, model){
         t.ok(error, 'error thrown as expected');
     });
 });

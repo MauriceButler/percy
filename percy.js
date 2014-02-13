@@ -77,6 +77,19 @@ function replace(key, data, callback){
     });
 }
 
+function update(key, data, callback){
+    var percy = this;
+    this.get(key, function(error, model){
+        if(error){
+            return callback(error);
+        }
+        for(var key in data){
+            model[key] = data[key];
+        }
+        percy.replace(key, model, callback);
+    });
+}
+
 function remove(key, callback){
     this.connector(function(error, bucket){
         if(error){
@@ -122,6 +135,7 @@ Percy.prototype.get = get;
 Percy.prototype.set = set;
 Percy.prototype.add = add;
 Percy.prototype.replace = replace;
+Percy.prototype.update = update;
 Percy.prototype.remove = remove;
 Percy.prototype.touch = touch;
 Percy.prototype.exists = exists;
