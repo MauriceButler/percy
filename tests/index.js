@@ -9,32 +9,32 @@ function createMockConnector(){
                 if(!(key in db)){
                     return callback(true);
                 }
-                callback(null, db[key]);
+                callback(null, {cas:{0:0,1:1}, value: db[key]});
             },
             set: function(key, model, callback){
                 db[key] = {value: model};
-                callback(null, model);
+                callback(null, {cas:{0:0,1:1}});
             },
             add: function(key, model, callback){
                 if(key in db){
                     return callback(true);
                 }
                 db[key] = {value: model};
-                callback(null, model);
+                callback(null, {cas:{0:0,1:1}});
             },
             remove: function(key, callback){
                 if(!(key in db)){
                     return callback(true);
                 }
                 delete db[key];
-                callback(null);
+                callback(null, {cas:{0:0,1:1}});
             },
             replace: function(key, model, callback){
                 if(!(key in db)){
                     return callback(true);
                 }
                 db[key] = {value: model};
-                callback(null, model);
+                callback(null, {cas:{0:0,1:1}});
             }
         });
     };

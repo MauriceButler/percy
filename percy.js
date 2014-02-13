@@ -101,11 +101,16 @@ function touch(key, options, callback){
 }
 
 function exists(key, callback){
-    this.touch(key, null, function(error, result){
+    this.touch(key, null, function(error){
+        exists = true;
         if(error){
-            return callback(error);
+            if(error.message === 'No such key'){
+                exists = false;
+            }else{
+                callback(error);
+            }
         }
-        callback(null, !!result);
+        callback(null, exists);
     });
 }
 
