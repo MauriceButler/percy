@@ -1,6 +1,6 @@
 {
   "name": "percy",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "a persistence layer",
   "main": "percy.js",
   "scripts": {
