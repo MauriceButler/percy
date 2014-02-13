@@ -101,7 +101,7 @@ function touch(key, options, callback){
 }
 
 function exists(key, callback){
-    touch(key, null, function(error, result){
+    this.touch(key, null, function(error, result){
         if(error){
             return callback(error);
         }
