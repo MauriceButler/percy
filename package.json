@@ -9,8 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "kgo": "0.1.x",
-    "jayschema": "~0.2.3"
+    "kgo": "0.1.x"
   },
   "devDependencies": {
     "grape": "~0.1.8"
