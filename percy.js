@@ -6,9 +6,11 @@ function get(key, callback) {
             return callback(error);
         }
         bucket.get(key, function(error, result){
-            if(error){
+            // Error code 13 is No such keys
+            if(error && error.code !== 13){
                 return callback(error);
             }
+
             callback(null, result.value);
         });
     });
@@ -115,7 +117,7 @@ function touch(key, options, callback){
 
 function exists(key, callback){
     this.touch(key, null, function(error){
-        exists = true;
+        var exists = true;
         if(error){
             if(error.message === 'No such key'){
                 exists = false;
