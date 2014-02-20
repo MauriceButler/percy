@@ -85,8 +85,8 @@ function update(key, data, callback){
         if(error){
             return callback(error);
         }
-        for(var key in data){
-            model[key] = data[key];
+        for(var property in data){
+            model[property] = data[property];
         }
         percy.replace(key, model, callback);
     });
