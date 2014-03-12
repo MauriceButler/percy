@@ -140,17 +140,20 @@ function exists(key, callback){
     });
 }
 
-function createKey(){
-    var keyParts = arrayProto.slice.call(arguments);
-    keyParts.unshift(this.entityType);
-    return keyParts.join(':');
+function createKey(key){
+    if(!Array.isArray(key)){
+        key = [key];
+    }
+    key.unshift(this.entityType);
+    return key.join(':');
 }
 
 function Percy(entityType, connector, validator){
-    this.entityType = entityType
+    this.entityType = entityType;
     this.connector = connector;
     this.validator = validator;
 }
+
 Percy.prototype.get = get;
 Percy.prototype.set = set;
 Percy.prototype.add = add;
