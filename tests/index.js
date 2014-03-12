@@ -167,10 +167,10 @@ test('replace model', function(t){
 
     var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
-    percy.add('abc', {a:1}, function(error, model){
+    percy.add(['abc', '123'], {a:1}, function(error, model){
         t.pass('model added');
 
-        percy.replace('abc', {b:2}, function(error, model){
+        percy.replace(['abc', '123'], {b:2}, function(error, model){
             t.deepEqual(model, {b:2}, 'replace succeded');
         });
     });
