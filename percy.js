@@ -1,23 +1,27 @@
-var kgo = require('kgo');
+var kgo = require('kgo'),
+    arrayProto = [];
 
 function get(key, callback) {
+    var entityKey = this.createKey(key);
+
     this.connector(function(error, bucket){
         if(error){
             return callback(error);
         }
-        bucket.get(key, function(error, result){
+        bucket.get(entityKey, function(error, result){
             // Error code 13 is No such keys
             if(error && error.code !== 13){
                 return callback(error);
             }
 
-            callback(null, result.value);
+            callback(null, result && result.value);
         });
     });
 }
 
 function set(key, data, callback) {
-    var percy = this;
+    var percy = this,
+        entityKey = this.createKey(key);
 
     kgo
     ('bucket', this.connector)
@@ -25,7 +29,7 @@ function set(key, data, callback) {
         percy.validator.validate(data, done);
     })
     (['bucket', 'model'], function(bucket, model){
-        bucket.set(key, model, function(error, result){
+        bucket.set(entityKey, model, function(error, result){
             if(error){
                 return callback(error);
             }
@@ -38,7 +42,8 @@ function set(key, data, callback) {
 }
 
 function add(key, data, callback){
-    var percy = this;
+    var percy = this,
+        entityKey = this.createKey(key);
 
     kgo
     ('bucket', this.connector)
@@ -46,7 +51,7 @@ function add(key, data, callback){
         percy.validator.validate(data, done);
     })
     (['bucket', 'model'], function(bucket, model){
-        bucket.add(key, model, function(error, result){
+        bucket.add(entityKey, model, function(error, result){
             if(error){
                 return callback(error);
             }
@@ -59,7 +64,8 @@ function add(key, data, callback){
 }
 
 function replace(key, data, callback){
-    var percy = this;
+    var percy = this,
+        entityKey = this.createKey(key);
 
     kgo
     ('bucket', this.connector)
@@ -67,7 +73,7 @@ function replace(key, data, callback){
         percy.validator.validate(data, done);
     })
     (['bucket', 'model'], function(bucket, model){
-        bucket.replace(key, model, function(error, result){
+        bucket.replace(entityKey, model, function(error, result){
             if(error){
                 return callback(error);
             }
@@ -81,6 +87,7 @@ function replace(key, data, callback){
 
 function update(key, data, callback){
     var percy = this;
+
     this.get(key, function(error, model){
         if(error){
             return callback(error);
@@ -93,11 +100,13 @@ function update(key, data, callback){
 }
 
 function remove(key, callback){
+    var entityKey = this.createKey(key);
+
     this.connector(function(error, bucket){
         if(error){
             return callback(error);
         }
-        bucket.remove(key, function(error, result){
+        bucket.remove(entityKey, function(error, result){
             if(error){
                 return callback(error);
             }
@@ -107,11 +116,13 @@ function remove(key, callback){
 }
 
 function touch(key, options, callback){
+    var entityKey = this.createKey(key);
+
     this.connector(function(error, bucket){
         if(error){
             return callback(error);
         }
-        bucket.touch(key, options, callback);
+        bucket.touch(entityKey, options, callback);
     });
 }
 
@@ -129,7 +140,14 @@ function exists(key, callback){
     });
 }
 
-function Percy(connector, validator){
+function createKey(){
+    var keyParts = arrayProto.slice.call(arguments);
+    keyParts.unshift(this.entityType);
+    return keyParts.join(':');
+}
+
+function Percy(entityType, connector, validator){
+    this.entityType = entityType
     this.connector = connector;
     this.validator = validator;
 }
@@ -141,5 +159,6 @@ Percy.prototype.update = update;
 Percy.prototype.remove = remove;
 Percy.prototype.touch = touch;
 Percy.prototype.exists = exists;
+Percy.prototype.createKey = createKey;
 
 module.exports = Percy;

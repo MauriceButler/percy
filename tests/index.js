@@ -52,7 +52,7 @@ test('create percy', function(t){
 
     t.plan(1);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     t.pass('Percy was created');
 });
@@ -61,7 +61,7 @@ test('set model', function(t){
 
     t.plan(1);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.set('abc', {}, function(error, model){
         t.pass('model added');
@@ -72,7 +72,7 @@ test('can double set model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.set('abc', {}, function(error, model){
         t.pass('model added');
@@ -87,7 +87,7 @@ test('get model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.set('abc', {}, function(error, model){
         t.pass('model added');
@@ -102,7 +102,7 @@ test('cannot get nonexistant model', function(t){
 
     t.plan(1);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.get('abc', function(error, model){
         t.ok(error, 'error thrown as expected');
@@ -113,7 +113,7 @@ test('add model', function(t){
 
     t.plan(1);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.add('abc', {}, function(error, model){
         t.pass('model added');
@@ -124,7 +124,7 @@ test('cannot double-add model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.add('abc', {}, function(error, model){
         t.pass('model added');
@@ -139,7 +139,7 @@ test('remove model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.add('abc', {}, function(error, model){
         t.pass('model added');
@@ -154,7 +154,7 @@ test('cannot remove nonexistant', function(t){
 
     t.plan(1);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.remove('abc', function(error, model){
         t.ok(error, 'error thrown as expected');
@@ -165,7 +165,7 @@ test('replace model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.add('abc', {a:1}, function(error, model){
         t.pass('model added');
@@ -180,7 +180,7 @@ test('cannot replace nonexistant', function(t){
 
     t.plan(1);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.replace('abc', {b:2}, function(error, model){
         t.ok(error, 'error thrown as expected');
@@ -191,7 +191,7 @@ test('update model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.add('abc', {a:1}, function(error, model){
         t.pass('model added');
@@ -206,7 +206,7 @@ test('cannot update nonexistant', function(t){
 
     t.plan(1);
 
-    var percy = new Percy(createMockConnector(), createMockValidator());
+    var percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.update('abc', {b:2}, function(error, model){
         t.ok(error, 'error thrown as expected');
