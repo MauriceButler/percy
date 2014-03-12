@@ -148,8 +148,20 @@ function createKey(key){
     return key.join(':');
 }
 
+function getView(viewName, callback){
+    var percy = this;
+
+    this.connector(function(error, bucket){
+        if(error){
+            return callback(error);
+        }
+        callback(null, bucket.view(percy.designName, viewName));
+    });
+}
+
 function Percy(entityType, connector, validator){
     this.entityType = entityType;
+    this.designName = entityType;
     this.connector = connector;
     this.validator = validator;
 }
@@ -163,5 +175,6 @@ Percy.prototype.remove = remove;
 Percy.prototype.touch = touch;
 Percy.prototype.exists = exists;
 Percy.prototype.createKey = createKey;
+Percy.prototype.getView = getView;
 
 module.exports = Percy;
