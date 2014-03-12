@@ -1,6 +1,6 @@
 {
   "name": "percy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "a persistence layer",
   "main": "percy.js",
   "scripts": {
@@ -15,10 +15,14 @@
     "grape": "~0.1.8"
   },
   "directories": {
-    "test": "test"
+    "test": "tests"
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:pni-yoik/percy.git"
-  }
+    "url": "git://github.com/KoryNunn/percy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KoryNunn/percy/issues"
+  },
+  "homepage": "https://github.com/KoryNunn/percy"
 }
