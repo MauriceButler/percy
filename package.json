@@ -6,23 +6,23 @@
   "scripts": {
     "test": "node ./tests"
   },
-  "author": "",
+  "author": "Maurice Butler <maurice.butler@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "kgo": "0.1.x"
+    "kgo": "^0.1.1"
   },
   "devDependencies": {
-    "grape": "~0.1.8"
+    "grape": "^0.1.10"
   },
   "directories": {
     "test": "tests"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/KoryNunn/percy.git"
+    "url": "git://github.com/yoik/percy.git"
   },
   "bugs": {
-    "url": "https://github.com/KoryNunn/percy/issues"
+    "url": "https://github.com/yoik/percy/issues"
   },
-  "homepage": "https://github.com/KoryNunn/percy"
+  "homepage": "https://github.com/yoik/percy"
 }
