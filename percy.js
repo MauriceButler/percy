@@ -92,6 +92,10 @@ function update(key, data, callback){
         if(error){
             return callback(error);
         }
+        if(!model){
+            return callback(new Error('No such key'));
+        }
+
         for(var property in data){
             model[property] = data[property];
         }
