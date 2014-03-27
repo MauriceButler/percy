@@ -19,6 +19,32 @@ function get(key, callback) {
     });
 }
 
+function getMulti(keys, options, callback) {
+
+    if(!callback && typeof options === 'function'){
+        callback = options;
+        options = {};
+    }
+
+    this.connector(function(error, bucket){
+        if(error){
+            return callback(error);
+        }
+        bucket.getMulti(keys, options, function(errors, results){
+            if(errors){
+                return callback(error);
+            }
+
+            var actualResults = [];
+            for(var key in results){
+                actualResults.push(results[key].value);
+            }
+
+            callback(null, actualResults);
+        });
+    });
+}
+
 function set(key, data, callback) {
     var percy = this,
         entityKey = this.createKey(key);
@@ -180,5 +206,6 @@ Percy.prototype.touch = touch;
 Percy.prototype.exists = exists;
 Percy.prototype.createKey = createKey;
 Percy.prototype.getView = getView;
+Percy.prototype.getMulti = getMulti;
 
 module.exports = Percy;
