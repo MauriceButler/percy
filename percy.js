@@ -189,6 +189,21 @@ function getView(viewName, callback){
     });
 }
 
+function increment(key, options, callback){
+    if(typeof options === 'function'){
+        callback = options;
+        options = {initial: 0, offset: 1};
+    }
+
+    this.connector(function(error, bucket){
+        if(error){
+            return callback(error);
+        }
+
+        bucket.incr(key, options, callback);
+    });
+}
+
 function Percy(entityType, connector, validator){
     this.entityType = entityType;
     this.designName = entityType;
@@ -207,5 +222,6 @@ Percy.prototype.exists = exists;
 Percy.prototype.createKey = createKey;
 Percy.prototype.getView = getView;
 Percy.prototype.getMulti = getMulti;
+Percy.prototype.increment = increment;
 
 module.exports = Percy;
