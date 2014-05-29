@@ -67,16 +67,16 @@ function set(key, data, callback) {
     });
 }
 
-function add(key, data, callback){
-    var percy = this,
-        entityKey = this.createKey(key);
+function add(data, callback){
+    var percy = this;
 
     kgo
     ('bucket', this.connector)
     ('model', function(done){
         percy.validator.validate(data, done);
     })
-    (['bucket', 'model'], function(bucket, model){
+    ('entityKey', ['model'], this.createKey.bind(null, null))
+    (['entityKey', 'bucket', 'model'], function(entityKey, bucket, model){
         bucket.add(entityKey, model, function(error, result){
             if(error){
                 return callback(error);
@@ -170,12 +170,14 @@ function exists(key, callback){
     });
 }
 
-function createKey(key){
+function createKey(key, data, callback){
     if(!Array.isArray(key)){
         key = [key];
     }
+
     key.unshift(this.entityType);
-    return key.join(':');
+
+    callback(null, key.join(':'));
 }
 
 function getView(viewName, callback){
