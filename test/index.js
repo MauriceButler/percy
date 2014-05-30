@@ -17,21 +17,21 @@ function createMockConnector(){
             },
             add: function(key, model, callback){
                 if(key in db){
-                    return callback(true);
+                    return callback(key + ' already in db');
                 }
                 db[key] = {value: model};
                 callback(null, {cas:{0:0,1:1}});
             },
             remove: function(key, callback){
                 if(!(key in db)){
-                    return callback(true);
+                    return callback(key + ' not in db');
                 }
                 delete db[key];
                 callback(null, {cas:{0:0,1:1}});
             },
             replace: function(key, model, callback){
                 if(!(key in db)){
-                    return callback(true);
+                    return callback(key + ' not in db');
                 }
                 db[key] = {value: model};
                 callback(null, {cas:{0:0,1:1}});
@@ -48,11 +48,22 @@ function createMockValidator(){
     };
 }
 
+function createTestPercy(){
+    var itemIndex = 0;
+        percy = new Percy('thing', createMockConnector(), createMockValidator());
+
+    percy.createId = function(callback){
+        callback(null, (itemIndex++).toString());
+    }
+
+    return percy;
+}
+
 test('create percy', function(t){
 
     t.plan(1);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
     t.pass('Percy was created');
 });
@@ -61,7 +72,7 @@ test('set model', function(t){
 
     t.plan(1);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
     percy.set('abc', {}, function(error, model){
         t.pass('model added');
@@ -72,7 +83,7 @@ test('can double set model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
     percy.set('abc', {}, function(error, model){
         t.pass('model added');
@@ -87,7 +98,7 @@ test('get model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
     percy.set('abc', {}, function(error, model){
         t.pass('model added');
@@ -102,7 +113,7 @@ test('cannot get nonexistant model', function(t){
 
     t.plan(1);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
     percy.get('abc', function(error, model){
         t.ok(error, 'error thrown as expected');
@@ -113,9 +124,9 @@ test('add model', function(t){
 
     t.plan(1);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
-    percy.add('abc', {}, function(error, model){
+    percy.add({}, function(error, model){
         t.pass('model added');
     });
 });
@@ -124,14 +135,14 @@ test('cannot double-add model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
-    percy.add('abc', {}, function(error, model){
+    percy.add({}, function(error, model){
         t.pass('model added');
-    });
 
-    percy.add('abc', {}, function(error, model){
-        t.ok(error, 'error thrown as expected');
+        percy.add(model, function(error, model){
+            t.ok(error, 'error thrown as expected');
+        });
     });
 });
 
@@ -139,12 +150,12 @@ test('remove model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
-    percy.add('abc', {}, function(error, model){
+    percy.add({}, function(error, model){
         t.pass('model added');
 
-        percy.remove('abc', function(error, model){
+        percy.remove(model.id, function(error, model){
             t.equal(error, null, 'model removed');
         });
     });
@@ -154,7 +165,7 @@ test('cannot remove nonexistant', function(t){
 
     t.plan(1);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
     percy.remove('abc', function(error, model){
         t.ok(error, 'error thrown as expected');
@@ -165,12 +176,12 @@ test('replace model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
-    percy.add(['abc', '123'], {a:1}, function(error, model){
+    percy.add({a:1}, function(error, model){
         t.pass('model added');
 
-        percy.replace(['abc', '123'], {b:2}, function(error, model){
+        percy.replace(model.id, {b:2}, function(error, model){
             t.deepEqual(model, {b:2}, 'replace succeded');
         });
     });
@@ -180,7 +191,7 @@ test('cannot replace nonexistant', function(t){
 
     t.plan(1);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
     percy.replace('abc', {b:2}, function(error, model){
         t.ok(error, 'error thrown as expected');
@@ -191,12 +202,15 @@ test('update model', function(t){
 
     t.plan(2);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
-    percy.add('abc', {a:1}, function(error, model){
+    percy.add({a:1}, function(error, model){
         t.pass('model added');
 
-        percy.update('abc', {b:2}, function(error, model){
+        percy.update(model.id, {b:2}, function(error, model){
+            // remove the id for comparison
+            delete model.id;
+
             t.deepEqual(model, {a:1, b:2}, 'update succeded');
         });
     });
@@ -206,7 +220,7 @@ test('cannot update nonexistant', function(t){
 
     t.plan(1);
 
-    var percy = new Percy('thing', createMockConnector(), createMockValidator());
+    var percy = createTestPercy();
 
     percy.update('abc', {b:2}, function(error, model){
         t.ok(error, 'error thrown as expected');
