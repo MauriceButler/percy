@@ -165,6 +165,10 @@ function createKey(id, data, callback){
             return callback("object already has an ID");
         }
         percy.createId(function(error, id){
+            if(error){
+                return callback(error);
+            }
+
             data.id = id;
             callback(null, percy.entityType + ':' + id);
         });

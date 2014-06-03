@@ -54,7 +54,7 @@ function createTestPercy(){
 
     percy.createId = function(callback){
         callback(null, (itemIndex++).toString());
-    }
+    };
 
     return percy;
 }
@@ -224,5 +224,22 @@ test('cannot update nonexistant', function(t){
 
     percy.update('abc', {b:2}, function(error, model){
         t.ok(error, 'error thrown as expected');
+    });
+});
+
+test('handels error from createKey', function(t){
+
+    t.plan(2);
+
+    var percy = createTestPercy(),
+        testError = new Error('BOOM!!');
+
+    percy.createId = function(callback){
+        callback(testError);
+    };
+
+    percy.add({foo: 'bar'}, function(error){
+        t.ok(error, 'error passed as expected');
+        t.equal(error, testError, 'correct error passed');
     });
 });
