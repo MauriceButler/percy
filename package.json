@@ -1,13 +1,13 @@
 {
   "name": "percy",
-  "version": "1.0.1",
-  "description": "a persistence layer",
+  "version": "1.0.2",
+  "description": "A persistance layer that plays nice with Couchbase",
   "main": "percy.js",
   "scripts": {
     "test": "node ./tests"
   },
   "author": "Maurice Butler <maurice.butler@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "kgo": "^1.0.0"
   },
@@ -24,5 +24,14 @@
   "bugs": {
     "url": "https://github.com/yoik/percy/issues"
   },
-  "homepage": "https://github.com/yoik/percy"
+  "homepage": "https://github.com/yoik/percy",
+  "keywords": [
+    "couchbase",
+    "persistance",
+    "layer",
+    "validate",
+    "validator",
+    "couch",
+    "base"
+  ]
 }
