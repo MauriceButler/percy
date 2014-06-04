@@ -243,3 +243,41 @@ test('handels error from createKey', function(t){
         t.equal(error, testError, 'correct error passed');
     });
 });
+
+test('handels valid key from createKey', function(t){
+    t.plan(3);
+
+    var percy = createTestPercy(),
+        expectedResult = {
+            foo: 'bar',
+            id: 1
+        },
+        testkeys = 0;
+
+    percy.createId = function(callback){
+        callback(null, ++testkeys);
+    };
+
+    percy.add({foo: 'bar'}, function(error, result){
+        t.notOk(error, 'no error as expected');
+        t.ok(result, 'result passed as expected');
+        t.deepEqual(result, expectedResult, 'correct error passed');
+    });
+});
+
+test('createKey callsback only once with correct id', function(t){
+    t.plan(3);
+
+    var percy = createTestPercy(),
+        testId = 1234567890;
+
+    percy.createId = function(callback){
+            callback(null, testId);
+    };
+
+    percy.createKey(null, {foo: 'bar'}, function(error, result){
+        t.notOk(error, 'no error as expected');
+        t.ok(result, 'result passed as expected');
+        t.equal(result, 'thing:' + testId, 'result is correct id');
+    });
+});
