@@ -164,6 +164,7 @@ function createKey(id, data, callback){
         if(data && 'id' in data){
             return callback("object already has an ID");
         }
+
         percy.createId(function(error, id){
             if(error){
                 return callback(error);
@@ -172,6 +173,8 @@ function createKey(id, data, callback){
             data.id = id;
             callback(null, percy.entityType + ':' + id);
         });
+
+        return;
     }
 
     callback(null, percy.entityType + ':' + id);

@@ -1,6 +1,6 @@
 {
   "name": "percy",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A persistance layer that plays nice with Couchbase",
   "main": "percy.js",
   "scripts": {
