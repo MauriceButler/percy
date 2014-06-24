@@ -1,9 +1,6 @@
-var kgo = require('kgo'),
-    arrayProto = [];
+var kgo = require('kgo');
 
 function get(id, callback) {
-    var percy = this;
-
     kgo
     ('bucket', this.connector)
     ('entityKey', this.createKey.bind(this, id, null))
@@ -56,7 +53,7 @@ function set(id, data, callback) {
     })
     ('entityKey', ['model'], this.createKey.bind(this, id))
     (['entityKey', 'bucket', 'model'], function(entityKey, bucket, model){
-        bucket.set(entityKey, model, function(error, result){
+        bucket.set(entityKey, model, function(error){
             if(error){
                 return callback(error);
             }
@@ -76,7 +73,7 @@ function add(data, callback){
     })
     ('entityKey', ['model'], this.createKey.bind(this, null))
     (['entityKey', 'bucket', 'model'], function(entityKey, bucket, model){
-        bucket.add(entityKey, model, function(error, result){
+        bucket.add(entityKey, model, function(error){
             callback(error, error ? null : model);
         });
     })
@@ -93,7 +90,7 @@ function replace(id, data, callback){
     })
     ('entityKey', ['model'], this.createKey.bind(this, id))
     (['entityKey', 'bucket', 'model'], function(entityKey, bucket, model){
-        bucket.replace(entityKey, model, function(error, result){
+        bucket.replace(entityKey, model, function(error){
             callback(error, error ? null : model);
         });
     })
@@ -123,7 +120,7 @@ function remove(id, callback){
     ('bucket', this.connector)
     ('entityKey', this.createKey.bind(this, id, null))
     (['entityKey', 'bucket'], function(entityKey, bucket){
-        bucket.remove(entityKey, function(error, result){
+        bucket.remove(entityKey, function(error){
             callback(error);
         });
     })
@@ -135,9 +132,6 @@ function touch(id, options, callback){
     ('bucket', this.connector)
     ('entityKey', this.createKey.bind(this, id, null))
     (['entityKey', 'bucket'], function(entityKey, bucket){
-        if(error){
-            return callback(error);
-        }
         bucket.touch(entityKey, options, callback);
     })
     .on('error', callback);
@@ -162,7 +156,7 @@ function createKey(id, data, callback){
 
     if(id == null){
         if(data && 'id' in data){
-            return callback("object already has an ID");
+            return callback('object already has an id');
         }
 
         percy.createId(function(error, id){
@@ -170,7 +164,10 @@ function createKey(id, data, callback){
                 return callback(error);
             }
 
-            data.id = id;
+            if(data){
+                data.id = id;
+            }
+
             callback(null, percy.entityType + ':' + id);
         });
 
@@ -180,8 +177,8 @@ function createKey(id, data, callback){
     callback(null, percy.entityType + ':' + id);
 }
 
-function createId(callback){
-    throw new Error("Not Implemented");
+function createId(){
+    throw new Error('Not Implemented');
 }
 
 function getView(viewName, callback){
