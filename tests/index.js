@@ -7,7 +7,7 @@ function createMockConnector(){
         callback(null, {
             get: function(key, callback){
                 if(!(key in db)){
-                    return callback(true);
+                    return callback(key + ' not in db');
                 }
                 callback(null, db[key]);
             },
@@ -49,7 +49,7 @@ function createMockValidator(){
 }
 
 function createTestPercy(){
-    var itemIndex = 0;
+    var itemIndex = 0,
         percy = new Percy('thing', createMockConnector(), createMockValidator());
 
     percy.createId = function(callback){
@@ -65,46 +65,54 @@ test('create percy', function(t){
 
     var percy = createTestPercy();
 
-    t.pass('Percy was created');
+    t.ok(percy, 'Percy was created');
 });
 
 test('set model', function(t){
 
-    t.plan(1);
+    t.plan(2);
 
-    var percy = createTestPercy();
+    var percy = createTestPercy(),
+        testData = {};
 
-    percy.set('abc', {}, function(error, model){
-        t.pass('model added');
+    percy.set('abc', testData, function(error, model){
+        t.notOk(error, 'no error');
+        t.equal(model, testData, 'model returned');
     });
 });
 
 test('can double set model', function(t){
 
-    t.plan(2);
+    t.plan(4);
 
-    var percy = createTestPercy();
+    var percy = createTestPercy(),
+        testData = {};
 
-    percy.set('abc', {}, function(error, model){
-        t.pass('model added');
+    percy.set('abc', testData, function(error, model){
+        t.notOk(error, 'no error');
+        t.equal(model, testData, 'model returned');
 
-        percy.set('abc', {}, function(error, model){
-            t.pass('model added again');
+        percy.set('abc', testData, function(error, model){
+            t.notOk(error, 'no error');
+            t.equal(model, testData, 'model returned');
         });
     });
 });
 
 test('get model', function(t){
 
-    t.plan(2);
+    t.plan(4);
 
-    var percy = createTestPercy();
+    var percy = createTestPercy(),
+        testData = {};
 
-    percy.set('abc', {}, function(error, model){
-        t.pass('model added');
+    percy.set('abc', testData, function(error, model){
+        t.notOk(error, 'no error');
+        t.equal(model, testData, 'model returned');
 
         percy.get('abc', function(error, model){
-            t.ok(model, 'got model');
+            t.notOk(error, 'no error');
+            t.equal(model, testData, 'model returned');
         });
     });
 });
@@ -115,48 +123,54 @@ test('cannot get nonexistant model', function(t){
 
     var percy = createTestPercy();
 
-    percy.get('abc', function(error, model){
-        t.ok(error, 'error thrown as expected');
+    percy.get('abc', function(error){
+        t.equal(error, 'thing:abc not in db', 'got correct error');
     });
 });
 
 test('add model', function(t){
 
-    t.plan(1);
+    t.plan(2);
 
-    var percy = createTestPercy();
+    var percy = createTestPercy(),
+        testData = {};
 
-    percy.add({}, function(error, model){
-        t.pass('model added');
+    percy.add(testData, function(error, model){
+        t.notOk(error, 'no error');
+        t.equal(model, testData, 'model returned');
     });
 });
 
 test('cannot double-add model', function(t){
 
-    t.plan(2);
+    t.plan(3);
 
-    var percy = createTestPercy();
+    var percy = createTestPercy(),
+        testData = {};
 
-    percy.add({}, function(error, model){
-        t.pass('model added');
+    percy.add(testData, function(error, model){
+        t.notOk(error, 'no error');
+        t.equal(model, testData, 'model returned');
 
-        percy.add(model, function(error, model){
-            t.ok(error, 'error thrown as expected');
+        percy.add(model, function(error){
+            t.equal(error, 'object already has an id', 'correct error');
         });
     });
 });
 
 test('remove model', function(t){
 
-    t.plan(2);
+    t.plan(3);
 
-    var percy = createTestPercy();
+    var percy = createTestPercy(),
+        testData = {};
 
-    percy.add({}, function(error, model){
-        t.pass('model added');
+    percy.add(testData, function(error, model){
+        t.notOk(error, 'no error');
+        t.equal(model, testData, 'model returned');
 
-        percy.remove(model.id, function(error, model){
-            t.equal(error, null, 'model removed');
+        percy.remove(model.id, function(error){
+            t.notOk(error, 'no error');
         });
     });
 });
@@ -167,8 +181,8 @@ test('cannot remove nonexistant', function(t){
 
     var percy = createTestPercy();
 
-    percy.remove('abc', function(error, model){
-        t.ok(error, 'error thrown as expected');
+    percy.remove('abc', function(error){
+        t.equal(error, 'thing:abc not in db', 'error thrown as expected');
     });
 });
 
@@ -193,8 +207,8 @@ test('cannot replace nonexistant', function(t){
 
     var percy = createTestPercy();
 
-    percy.replace('abc', {b:2}, function(error, model){
-        t.ok(error, 'error thrown as expected');
+    percy.replace('abc', {b:2}, function(error){
+        t.equal(error, 'thing:abc not in db', 'error thrown as expected');
     });
 });
 
@@ -222,8 +236,8 @@ test('cannot update nonexistant', function(t){
 
     var percy = createTestPercy();
 
-    percy.update('abc', {b:2}, function(error, model){
-        t.ok(error, 'error thrown as expected');
+    percy.update('abc', {b:2}, function(error){
+        t.equal(error, 'thing:abc not in db', 'error thrown as expected');
     });
 });
 
@@ -272,10 +286,47 @@ test('createKey callsback only once with correct id', function(t){
         testId = 1234567890;
 
     percy.createId = function(callback){
-            callback(null, testId);
+        callback(null, testId);
     };
 
     percy.createKey(null, {foo: 'bar'}, function(error, result){
+        t.notOk(error, 'no error as expected');
+        t.ok(result, 'result passed as expected');
+        t.equal(result, 'thing:' + testId, 'result is correct id');
+    });
+});
+
+test('createKey sets id on data', function(t){
+    t.plan(4);
+
+    var percy = createTestPercy(),
+        testData = {foo: 'bar'},
+        testId = 1234567890;
+
+    percy.createId = function(callback){
+        callback(null, testId);
+    };
+
+    percy.createKey(null, testData, function(error, result){
+        t.notOk(error, 'no error as expected');
+        t.ok(result, 'result passed as expected');
+        t.equal(result, 'thing:' + testId, 'result is correct id');
+        t.equal(testData.id, testId, 'data.id is correct id');
+    });
+});
+
+test('createKey dosent go bang if data is null', function(t){
+    t.plan(3);
+
+    var percy = createTestPercy(),
+        testData = null,
+        testId = 1234567890;
+
+    percy.createId = function(callback){
+        callback(null, testId);
+    };
+
+    percy.createKey(null, testData, function(error, result){
         t.notOk(error, 'no error as expected');
         t.ok(result, 'result passed as expected');
         t.equal(result, 'thing:' + testId, 'result is correct id');
