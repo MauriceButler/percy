@@ -1,10 +1,10 @@
-#percy
+# percy
 
-A persistance layer that plays nice with Couchbase via [Couchector](https://www.npmjs.org/package/couchector)
+A persistance layer that plays nice with couchbase@^2.0.0
 
-##Usage
+## Usage
     var Percy = require('percy'),
-        connection, // connection object such as a Couchector (https://www.npmjs.org/package/couchector)
+        bucket, // bucket object from Couchbase
         validator, // object that has a validate function with a signature of function(model, callback)
         myCoolIdGenerator; // returns a unique id for this entity
 
