@@ -1,42 +1,49 @@
-var test = require('grape'),
+var test = require('tape'),
     Percy = require('../');
 
-function createMockConnector(){
+function createMockBucket(){
     var db = {};
-    return function(callback){
-        callback(null, {
-            get: function(key, callback){
-                if(!(key in db)){
-                    return callback(key + ' not in db');
-                }
-                callback(null, db[key]);
-            },
-            set: function(key, model, callback){
-                db[key] = {cas:{0:0,1:1}, value: model};
-                callback(null, {cas:{0:0,1:1}});
-            },
-            add: function(key, model, callback){
-                if(key in db){
-                    return callback(key + ' already in db');
-                }
-                db[key] = {value: model};
-                callback(null, {cas:{0:0,1:1}});
-            },
-            remove: function(key, callback){
-                if(!(key in db)){
-                    return callback(key + ' not in db');
-                }
-                delete db[key];
-                callback(null, {cas:{0:0,1:1}});
-            },
-            replace: function(key, model, callback){
-                if(!(key in db)){
-                    return callback(key + ' not in db');
-                }
-                db[key] = {value: model};
-                callback(null, {cas:{0:0,1:1}});
+    return {
+        get: function(key, callback){
+            if(!(key in db)){
+                return callback(key + ' not in db');
             }
-        });
+            callback(null, db[key]);
+        },
+        upsert: function(key, model, callback){
+            db[key] = {cas:{0:0,1:1}, value: model};
+            callback(null, {cas:{0:0,1:1}});
+        },
+        insert: function(key, model, callback){
+            if(key in db){
+                return callback(key + ' already in db');
+            }
+            db[key] = {value: model};
+            callback(null, {cas:{0:0,1:1}});
+        },
+        remove: function(key, callback){
+            if(!(key in db)){
+                return callback(key + ' not in db');
+            }
+            delete db[key];
+            callback(null, {cas:{0:0,1:1}});
+        },
+        replace: function(key, model, callback){
+            if(!(key in db)){
+                return callback(key + ' not in db');
+            }
+            db[key] = {value: model};
+            callback(null, {cas:{0:0,1:1}});
+        },
+        getMulti: function(keys, options, callback){
+            var results = {};
+
+            for (var i = 0; i < keys.length; i++) {
+                results[keys[i]] = db[keys[i]];
+            }
+
+            callback(null, results);
+        }
     };
 }
 
@@ -50,7 +57,7 @@ function createMockValidator(){
 
 function createTestPercy(){
     var itemIndex = 0,
-        percy = new Percy('thing', createMockConnector(), createMockValidator());
+        percy = new Percy('thing', createMockBucket(), createMockValidator());
 
     percy.createId = function(callback){
         callback(null, (itemIndex++).toString());
@@ -330,5 +337,28 @@ test('createKey dosent go bang if data is null', function(t){
         t.notOk(error, 'no error as expected');
         t.ok(result, 'result passed as expected');
         t.equal(result, 'thing:' + testId, 'result is correct id');
+    });
+});
+
+test('getMulti', function(t){
+    t.plan(6);
+
+    var percy = createTestPercy(),
+        testData1 = {foo: 'bar'},
+        testData2 = {stuff: 'meh'};
+
+    percy.set('testData1', testData1, function(error, model1){
+        t.notOk(error, 'no error');
+        t.equal(model1, testData1, 'model1 returned');
+
+        percy.set('testData2', testData2, function(error, model2){
+            t.notOk(error, 'no error');
+            t.equal(model2, testData2, 'model2 returned');
+
+            percy.getMulti(['thing:testData1', 'thing:testData2'], function(error, results){
+                t.notOk(error, 'no error');
+                t.deepEqual(results, [testData1, testData2], 'results returned');
+            });
+        });
     });
 });
