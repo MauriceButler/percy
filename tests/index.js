@@ -38,6 +38,10 @@ function createMockBucket(){
         getMulti: function(keys, options, callback){
             var results = {};
 
+            if(!callback && typeof options === 'function'){
+                callback = options;
+            }
+
             for (var i = 0; i < keys.length; i++) {
                 results[keys[i]] = db[keys[i]];
             }
@@ -355,7 +359,7 @@ test('getMulti', function(t){
             t.notOk(error, 'no error');
             t.equal(model2, testData2, 'model2 returned');
 
-            percy.getMulti(['thing:testData1', 'thing:testData2'], function(error, results){
+            percy.getMulti(['testData1', 'testData2'], function(error, results){
                 t.notOk(error, 'no error');
                 t.deepEqual(results, [testData1, testData2], 'results returned');
             });
