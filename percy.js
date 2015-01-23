@@ -1,4 +1,51 @@
-var kgo = require('kgo');
+var kgo = require('kgo'),
+    map = require('map');
+
+function createKey(id, data, callback){
+    var percy = this;
+
+    if(id == null){
+        if(data && 'id' in data){
+            return callback('object already has an id');
+        }
+
+        percy.createId(function(error, id){
+            if(error){
+                return callback(error);
+            }
+
+            if(data){
+                data.id = id;
+            }
+
+            callback(null, percy.entityType + ':' + id);
+        });
+
+        return;
+    }
+
+    callback(null, percy.entityType + ':' + id);
+}
+
+function createKeys(ids, callback){
+    var percy = this;
+
+    kgo
+    ({
+        ids: ids
+    })
+    ('keys', ['ids'], map.bind(null, function(id, done){
+        percy.createKey(id, true, done);
+    }))
+    (['keys'], callback.bind(null, null))
+    .on('error', function(error){
+        callback(error);
+    });
+}
+
+function createId(){
+    throw new Error('Not Implemented');
+}
 
 function get(id, callback) {
     var percy = this;
@@ -18,24 +65,38 @@ function get(id, callback) {
     .on('error', callback);
 }
 
-function getMulti(keys, options, callback) {
+function getMulti(ids, options, callback) {
+    var percy = this;
 
     if(!callback && typeof options === 'function'){
         callback = options;
         options = {};
     }
 
-    this.bucket.getMulti(keys, options, function(error, results){
-        if(error){
-            return callback(error);
+    kgo
+    ({
+        ids: ids,
+        options: options
+    })
+    ('keys', ['ids'], createKeys.bind(percy))
+    ('results', ['keys', 'options'], function(keys, options, done){
+        if(!keys || !keys.length){
+            return done();
         }
 
+        percy.bucket.getMulti(keys, done);
+    })
+    (['results'], function(results){
         var actualResults = [];
+
         for(var key in results){
             actualResults.push(results[key].value);
         }
 
         callback(null, actualResults);
+    })
+    .on('error', function(error){
+        callback(error);
     });
 }
 
@@ -135,36 +196,6 @@ function touch(id, expiry, options, callback){
         percy.bucket.touch(entityKey, expiry, options, callback);
     })
     .on('error', callback);
-}
-
-function createKey(id, data, callback){
-    var percy = this;
-
-    if(id == null){
-        if(data && 'id' in data){
-            return callback('object already has an id');
-        }
-
-        percy.createId(function(error, id){
-            if(error){
-                return callback(error);
-            }
-
-            if(data){
-                data.id = id;
-            }
-
-            callback(null, percy.entityType + ':' + id);
-        });
-
-        return;
-    }
-
-    callback(null, percy.entityType + ':' + id);
-}
-
-function createId(){
-    throw new Error('Not Implemented');
 }
 
 function Percy(entityType, bucket, validator){
