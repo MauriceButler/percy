@@ -73,6 +73,10 @@ function getMulti(ids, options, callback) {
         options = {};
     }
 
+    if(!ids || !ids.length || !Array.isArray(ids)){
+        return callback(null, []);
+    }
+
     kgo
     ({
         ids: ids,
