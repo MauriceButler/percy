@@ -225,15 +225,18 @@ test('cannot replace nonexistant', function(t){
 
 test('update model', function(t){
 
-    t.plan(2);
+    t.plan(3);
 
     var percy = createTestPercy();
 
     percy.add({a:1}, function(error, model){
         t.pass('model added');
 
-        percy.update(model.id, {b:2}, function(error, model){
+        var originalId = model.id;
+
+        percy.update(model.id, {id: 123, b:2}, function(error, model){
             // remove the id for comparison
+            t.equal(model.id, originalId, 'id was not changed');
             delete model.id;
 
             t.deepEqual(model, {a:1, b:2}, 'update succeded');
@@ -364,5 +367,37 @@ test('getMulti', function(t){
                 t.deepEqual(results, [testData1, testData2], 'results returned');
             });
         });
+    });
+});
+
+test('getMulti stupid errors', function(t){
+    t.plan(3);
+
+    var percy = new Percy('thing', {
+            getMulti: function(keys, callback){
+                callback(123);
+            }
+        }, createMockValidator());
+
+    percy.getMulti(['foo', 'bar'], function(error, results){
+        t.ok(error instanceof Error, 'correct error');
+        t.equal(error.message, 'No such key (123)', 'correct error message');
+        t.notOk(results, 'no results returned');
+    });
+});
+
+test('getMulti normal error handeling', function(t){
+    t.plan(2);
+
+    var testError = 'BANG!!!!',
+        percy = new Percy('thing', {
+            getMulti: function(keys, callback){
+                callback(testError);
+            }
+        }, createMockValidator());
+
+    percy.getMulti(['foo', 'bar'], function(error, results){
+        t.equal(error, testError, 'correct error message');
+        t.notOk(results, 'no results returned');
     });
 });
