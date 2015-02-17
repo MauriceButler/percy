@@ -88,7 +88,17 @@ function getMulti(ids, options, callback) {
             return done();
         }
 
-        percy.bucket.getMulti(keys, done);
+        percy.bucket.getMulti(keys, function(error, result){
+            if(error){
+                if(parseInt(error, 10)){
+                   return done(new Error('No such key (' + error + ')'));
+                }
+
+                return done(error);
+            }
+
+            done(null, result);
+        });
     })
     (['results'], function(results){
         var actualResults = [];
@@ -172,7 +182,9 @@ function update(id, data, callback){
         }
 
         for(var property in data){
-            model[property] = data[property];
+            if(property !== 'id'){
+                model[property] = data[property];
+            }
         }
         percy.replace(id, model, callback);
     });
